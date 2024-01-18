@@ -33,7 +33,7 @@ def draw_text(ctx, pos, c, s, text, center=None):
 
     desc = pango.FontDescription()
     desc.size = s * PANGO_SCALE
-    desc.family = "Comfortaa"
+    desc.family = "Nunito"
     layout.font_description = desc
 
     layout.apply_markup(f"{text}")
@@ -56,8 +56,9 @@ def draw_text(ctx, pos, c, s, text, center=None):
 
 
 
-def draw_triagle(cr, pos, v):
+def draw_triagle(cr, pos, v, white=False):
     c = (0.0, 1.0, 0.0)
+
     if v < 0:
         c = (1.0, 0, 0)
 
@@ -79,7 +80,10 @@ def draw_triagle(cr, pos, v):
     # cr.stroke_preserve()
     cr.fill()
 
-    draw_text(cr, (30, -15), c, 20, str(round(abs(v), 2)) + "%")
+    if white:
+        draw_text(cr, (30, -15), (1, 1, 1), 20, str(round(abs(v), 2)) + "%")
+    else:
+        draw_text(cr, (30, -15), c, 20, str(round(abs(v), 2)) + "%")
     cr.restore()
 
 
