@@ -467,7 +467,7 @@ if __name__ == "__main__":
         "😱": "example.png",
         "🙏": f"./assets/donate.png",
     }
-    2/0
+
     for emoji, png_file in files.items():
         if emoji == "🙏":
             continue
