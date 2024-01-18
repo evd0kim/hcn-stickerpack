@@ -343,7 +343,7 @@ def draw_etf_price(data):
     space = 0
     for ticker, delta in data.items():
         draw_text(cr, (70, 65 + space), (1, 1, 1), 20, ticker)
-        draw_triagle(cr, (70 + 120, 85 + space), delta)
+        draw_triagle(cr, (70 + 110, 80 + space), delta)
         space += 40
 
     status = "Closed"
