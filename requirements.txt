@@ -1,0 +1,7 @@
+pytelegrambotapi
+cairocffi
+pangocffi
+pangocairocffi
+requests
+cairosvg
+pyTelegramBotAPI
