@@ -271,8 +271,8 @@ def draw_btc_price(data):
     draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>BTC</b>  Bitcoin")
     draw_text(cr, (70, 360 + 40), (1, 1, 1), 16, dt)
     draw_text(cr, (70, 360 + 70), (1, 1, 1), 16, data["btc_height"])
-    draw_text(cr, (70, 65), (1, 1, 1), 50, "<b>$" + data["btc_usd_price"] + "</b>")
 
+    draw_text(cr, (70, 65), (1, 1, 1), 50, "<b>$" + data["btc_usd_price"] + "</b>")
     draw_text(cr, (70, 65 + 80), (1, 1, 1), 25, data["btc_eur_price"])
     draw_text(cr, (240, 65 + 80), (1, 1, 1), 25, "€")
 
@@ -401,19 +401,21 @@ def draw_eth_price(data):
     cr.fill()
 
     dt = date_now.strftime("%H:%M %a, %d.%m.%y (GMT%z)")
+
     draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>ETH</b>  Ethereum")
+    draw_triagle(cr, (350, 375), data["eth_percent"])
     draw_text(cr, (70, 360 + 40), (1, 1, 1), 16, dt)
     draw_text(cr, (70, 360 + 70), (1, 1, 1), 16, "💩")
-    draw_text(cr, (70, 90), (1, 1, 1), 50, "<b>" + data["eth_btc_price"] + " BTC</b>")
-    draw_text(cr, (70, 90 + 80), (1, 1, 1), 25, data["eth_usd_price"])
-    draw_text(cr, (230, 90 + 80), (1, 1, 1), 25, "$")
-    draw_text(cr, (70, 90 + 80 + 25 + 15), (1, 1, 1), 25, data["eth_eur_price"])
-    draw_text(cr, (230, 90 + 80 + 25 + 15), (1, 1, 1), 25, "€")
-    draw_text(cr, (70, 90 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["eth_rub_price"])
-    draw_text(cr, (230, 90 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₽")
-    draw_text(cr, (70, 90 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["eth_uah_price"])
-    draw_text(cr, (230, 90 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₴")
-    draw_triagle(cr, (350, 375), data["eth_percent"])
+
+    draw_text(cr, (70, 65), (1, 1, 1), 50, "<b>" + data["eth_btc_price"] + " BTC</b>")
+    draw_text(cr, (70, 65 + 90), (1, 1, 1), 25, data["eth_usd_price"])
+    draw_text(cr, (230, 65 + 90), (1, 1, 1), 25, "$")
+    draw_text(cr, (70, 65 + 90 + 25 + 15), (1, 1, 1), 25, data["eth_eur_price"])
+    draw_text(cr, (230, 65 + 90 + 25 + 15), (1, 1, 1), 25, "€")
+    draw_text(cr, (70, 65 + 90 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["eth_rub_price"])
+    draw_text(cr, (230, 65 + 90 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₽")
+    draw_text(cr, (70, 65 + 90 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["eth_uah_price"])
+    draw_text(cr, (230, 65 + 90 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₴")
 
     cr2.set_source_surface(surface, 1, 1)
 
@@ -465,7 +467,7 @@ if __name__ == "__main__":
         "😱": "example.png",
         "🙏": f"./assets/donate.png",
     }
-
+    2/0
     for emoji, png_file in files.items():
         if emoji == "🙏":
             continue
