@@ -135,6 +135,14 @@ def load_btc():
         ),
         None,
     )
+    out["eth_aud_price"] = next(
+        (
+            update_currency(float(v["last"]))
+            for k, v in j["prices"].items()
+            if k == "eth"
+        ),
+        None,
+    )
 
     resp = requests.get(url=BTC_API_URL)
     j = resp.json()
@@ -417,10 +425,10 @@ def draw_eth_price(data):
     draw_text(cr, (230, 65 + 90), (1, 1, 1), 25, "$")
     draw_text(cr, (70, 65 + 90 + 25 + 15), (1, 1, 1), 25, data["eth_eur_price"])
     draw_text(cr, (230, 65 + 90 + 25 + 15), (1, 1, 1), 25, "€")
-    draw_text(cr, (70, 65 + 90 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["eth_rub_price"])
-    draw_text(cr, (230, 65 + 90 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₽")
-    draw_text(cr, (70, 65 + 90 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["eth_uah_price"])
-    draw_text(cr, (230, 65 + 90 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₴")
+    draw_text(cr, (70, 65 + 90 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["eth_uah_price"])
+    draw_text(cr, (230, 65 + 90 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₴")
+    draw_text(cr, (70, 65 + 90 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["eth_rub_price"])
+    draw_text(cr, (230, 65 + 90 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₽")
 
     cr2.set_source_surface(surface, 1, 1)
 
@@ -460,11 +468,12 @@ if __name__ == "__main__":
 
         reqi = bot.get_sticker_set(PACK_NAME)
 
+        delete = {}
+
         for s in reqi.stickers:
             if s.emoji == "🙏":
                 continue
-            req = bot.delete_sticker_from_set(s.file_id)  # up
-            print("delete", s.file_id)
+            delete[s.emoji] = s.file_id
 
         files = {
             "💸": "btc.png",
@@ -477,14 +486,22 @@ if __name__ == "__main__":
         for emoji, png_file in files.items():
             if emoji == "🙏":
                 continue
-            with open(png_file, "rb") as sticker:
-                req = bot.add_sticker_to_set(
-                    USER_ID,
-                    name=PACK_NAME,
-                    png_sticker=sticker,
-                    emojis=emoji,
-                    tgs_sticker=None,
-                )
-                print(req)
+            try:
+                with open(png_file, "rb") as sticker:
+                    req = bot.add_sticker_to_set(
+                        USER_ID,
+                        name=PACK_NAME,
+                        png_sticker=sticker,
+                        emojis=emoji,
+                        tgs_sticker=None,
+                    )
+                if emoji in delete.keys():
+                    req = bot.delete_sticker_from_set(delete[emoji])
+                print(f"Delete {emoji} {s.file_id}")
+            except Exception as e:
+                bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
+                time.sleep(60)
+                continue
+
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
