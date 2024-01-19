@@ -230,16 +230,17 @@ def load_etf():
     }
 
     tickers = yf.Tickers(' '.join(etfs.keys()))
-    print(tickers)
+
     for t in etfs.keys():
-        etf = tickers.tickers[t]
         try:
+            etf = tickers.tickers[t]
             if is_us_market_open_now():
                 out[t] =((etf.info.get("bid") + etf.info.get("ask")) * 0.5 - etf.info.get("open"))/etf.info.get("open")*100.
             else:
                 out[t] = (etf.info.get("open") - etf.info.get("previousClose")) / etf.info.get("open") * 100.
-        except:
-            pass
+        except Exception as etf_exception:
+            raise etf_exception
+
     return out
 
 
@@ -445,42 +446,45 @@ if __name__ == "__main__":
 
     bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN, parse_mode=None)
 
-    btc_data = load_btc()
-    btc_png = draw_btc_price(btc_data)
-    btc_png.write_to_png("btc.png")
+    try:
+        btc_data = load_btc()
+        btc_png = draw_btc_price(btc_data)
+        btc_png.write_to_png("btc.png")
 
-    eth_png = draw_eth_price(btc_data)
-    eth_png.write_to_png("eth.png")
+        eth_png = draw_eth_price(btc_data)
+        eth_png.write_to_png("eth.png")
 
-    etf_data = load_etf()
-    etf_png = draw_etf_price(etf_data)
-    etf_png.write_to_png("etf.png")
+        etf_data = load_etf()
+        etf_png = draw_etf_price(etf_data)
+        etf_png.write_to_png("etf.png")
 
-    reqi = bot.get_sticker_set(PACK_NAME)
+        reqi = bot.get_sticker_set(PACK_NAME)
 
-    for s in reqi.stickers:
-        if s.emoji == "🙏":
-            continue
-        req = bot.delete_sticker_from_set(s.file_id)  # up
-        print("delete", s.file_id)
+        for s in reqi.stickers:
+            if s.emoji == "🙏":
+                continue
+            req = bot.delete_sticker_from_set(s.file_id)  # up
+            print("delete", s.file_id)
 
-    files = {
-        "💸": "btc.png",
-        "💩": "eth.png",
-        "🏦": "etf.png",
-        "😱": "example.png",
-        "🙏": f"./assets/donate.png",
-    }
+        files = {
+            "💸": "btc.png",
+            "💩": "eth.png",
+            "🏦": "etf.png",
+            "😱": "example.png",
+            "🙏": f"./assets/donate.png",
+        }
 
-    for emoji, png_file in files.items():
-        if emoji == "🙏":
-            continue
-        with open(png_file, "rb") as sticker:
-            req = bot.add_sticker_to_set(
-                USER_ID,
-                name=PACK_NAME,
-                png_sticker=sticker,
-                emojis=emoji,
-                tgs_sticker=None,
-            )
-            print(req)
+        for emoji, png_file in files.items():
+            if emoji == "🙏":
+                continue
+            with open(png_file, "rb") as sticker:
+                req = bot.add_sticker_to_set(
+                    USER_ID,
+                    name=PACK_NAME,
+                    png_sticker=sticker,
+                    emojis=emoji,
+                    tgs_sticker=None,
+                )
+                print(req)
+    except Exception as e:
+        bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
