@@ -19,7 +19,7 @@ ETHBTC_API_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC"
 PRICE_API_URL = "https://api.binance.com/api/v3/ticker/price"
 BLOCK_HEIGHT_URL = "https://mempool.space/api/blocks/tip/height"
 
-date_now = datetime.now()
+date_now = datetime.utcnow()
 
 def load_fear():
     resp = requests.get(url=FNG_API_URL)
@@ -228,12 +228,16 @@ def load_etf():
         #"BRRR": 1,
         #"PBTC": 1,
     }
+
+    tickers = yf.Tickers(' '.join(etfs.keys()))
+    print(tickers)
     for t in etfs.keys():
-        etf = yf.Ticker(t)
+        etf = tickers.tickers[t]
         try:
-            print(etf.info.get("open"))
-            print(etf.info.get("bid"))
-            out[t] =((etf.info.get("bid") + etf.info.get("ask")) * 0.5 - etf.info.get("open"))/etf.info.get("open")*100.
+            if is_us_market_open_now():
+                out[t] =((etf.info.get("bid") + etf.info.get("ask")) * 0.5 - etf.info.get("open"))/etf.info.get("open")*100.
+            else:
+                out[t] = (etf.info.get("open") - etf.info.get("previousClose")) / etf.info.get("open") * 100.
         except:
             pass
     return out
@@ -346,12 +350,12 @@ def draw_etf_price(data):
         draw_triagle(cr, (70 + 110, 80 + space), delta, True)
         space += 40
 
-    status = "Closed"
+    status = "Closed 🔴"
     if is_us_market_open_now():
-        status = "Open"
+        status = "Open 🟢"
 
     draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>ETF</b>  Bitcoin, spot")
-    dt = date_now.strftime("%H:%M %a, %d.%m.%y (GMT%z)")
+    dt = date_now.strftime("%H:%M %a, %d.%m.%y (UTC%z)")
     draw_text(cr, (70, 360 + 40), (1, 1, 1), 16, dt + " " + status )
     draw_text(cr, (70, 360 + 70), (1, 1, 1), 16, "🇺🇸")
 
