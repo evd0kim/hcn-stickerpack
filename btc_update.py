@@ -272,7 +272,7 @@ def draw_btc_price(data):
     cr.set_source_rgb(0, 0, 0)
     cr.fill()
 
-    dt = date_now.strftime("%H:%M %a, %d.%m.%y (GMT%z)")
+    dt = date_now.strftime("%H:%M %a, %d.%m.%y (UTC%z)")
     draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>BTC</b>  Bitcoin")
     draw_text(cr, (70, 360 + 40), (1, 1, 1), 16, dt)
     draw_text(cr, (70, 360 + 70), (1, 1, 1), 16, data["btc_height"])
@@ -405,7 +405,7 @@ def draw_eth_price(data):
     cr.set_source_rgb(0, 0, 0)
     cr.fill()
 
-    dt = date_now.strftime("%H:%M %a, %d.%m.%y (GMT%z)")
+    dt = date_now.strftime("%H:%M %a, %d.%m.%y (UTC%z)")
 
     draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>ETH</b>  Ethereum")
     draw_triagle(cr, (350, 375), data["eth_percent"])
