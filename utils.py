@@ -134,10 +134,13 @@ def is_us_market_open_now():
     # Eastern Time is UTC-5 (standard time) or UTC-4 (daylight saving time)
     # Note: This approach does not account for daylight saving time changes
     offset = -5 if now_utc.month < 3 or now_utc.month > 11 else -4
-    now_et = now_utc.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=offset))).time()
+    now_et = now_utc.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=offset)))
+
+    if now_et.weekday() > 4:
+        return False
 
     # Check if current ET time is within US market hours
-    return market_open <= now_et <= market_close
+    return market_open <= now_et.time() <= market_close
 
 
 if __name__ == "__main__":

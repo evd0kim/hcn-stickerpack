@@ -5,7 +5,7 @@ import math
 import requests
 from datetime import datetime
 import yfinance as yf
-import time
+from time import sleep
 
 import telebot
 
@@ -500,7 +500,7 @@ if __name__ == "__main__":
                 print(f"Delete {emoji} {s.file_id}")
             except Exception as e:
                 bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
-                time.sleep(60)
+                sleep(60)
                 continue
 
     except Exception as e:
