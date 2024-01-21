@@ -495,6 +495,7 @@ if __name__ == "__main__":
                         emojis=emoji,
                         tgs_sticker=None,
                     )
+                    sleep(15)
                 if emoji in delete.keys():
                     req = bot.delete_sticker_from_set(delete[emoji])
                 print(f"Delete {emoji} {s.file_id}")
