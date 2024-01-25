@@ -244,6 +244,8 @@ def load_etf():
             etf = tickers.tickers[t]
             if is_us_market_open_now() and etf.info.get("bid") and etf.info.get("ask") and etf.info.get("open"):
                 out[t] =((etf.info.get("bid") + etf.info.get("ask")) * 0.5 - etf.info.get("open"))/etf.info.get("open")*100.
+            elif not is_us_market_open_now() and etf.info.get("close"):
+                out[t] = (etf.info.get("close") - etf.info.get("previousClose")) / etf.info.get("close") * 100.
             else:
                 out[t] = (etf.info.get("open") - etf.info.get("previousClose")) / etf.info.get("open") * 100.
         except Exception as etf_exception:
