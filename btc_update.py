@@ -17,6 +17,7 @@ AUD_API_URL = "https://www.coinspot.com.au/pubapi/v2/latest"
 BTC_API_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"
 ETHBTC_API_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC"
 PRICE_API_URL = "https://api.binance.com/api/v3/ticker/price"
+RUB_PRICE_API_URL = "https://blockchain.info/ticker"
 BLOCK_HEIGHT_URL = "https://mempool.space/api/blocks/tip/height"
 
 date_now = datetime.utcnow()
@@ -166,14 +167,6 @@ def load_btc():
         ),
         None,
     )
-    out["btc_rub_price"] = next(
-        (
-            update_currency(float(item["price"]))
-            for item in j
-            if item["symbol"] == "BTCRUB"
-        ),
-        None,
-    )
     out["btc_uah_price"] = next(
         (
             update_currency(float(item["price"]))
@@ -215,6 +208,10 @@ def load_btc():
         ),
         None,
     )
+
+    resp = requests.get(url=RUB_PRICE_API_URL)
+    j = resp.json()
+    out["btc_rub_price"] = update_currency(float(j["RUB"]["last"]))
 
     resp = requests.get(url=BLOCK_HEIGHT_URL)
     out["btc_height"] = resp.text
