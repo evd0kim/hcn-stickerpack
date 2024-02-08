@@ -472,22 +472,9 @@ if __name__ == "__main__":
         for s in reqi.stickers:
             if s.emoji == "🙏":
                 continue
-            done = False
-            counter = 0
-            while not done:
-                try:
-                    req = bot.delete_sticker_from_set(s.file_id)
-                    print(f"Deleted {s.emoji} {s.file_id}")
-                    done = True
-                except Exception as e:
-                    counter += 1
-                    bot.send_message(USER_ID, f"Failed to delete ({counter}): {e}")
-                    if counter < 10:
-                        sleep(30)
-                        continue
-                    else:
-                        break
-            sleep(15)
+            req = bot.delete_sticker_from_set(s.file_id)
+            print(f"Deleted {s.emoji} {s.file_id}")
+            sleep(5)
 
         files = {
             "💸": "btc.png",
@@ -521,5 +508,7 @@ if __name__ == "__main__":
                             continue
                         else:
                             break
+            sleep(15)
+
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
