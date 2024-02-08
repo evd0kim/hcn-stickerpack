@@ -475,7 +475,22 @@ if __name__ == "__main__":
         for s in reqi.stickers:
             if s.emoji == "🙏":
                 continue
-            delete[s.emoji] = s.file_id
+            done = False
+            counter = 0
+            while not done:
+                try:
+                    req = bot.delete_sticker_from_set(s.file_id)
+                    print(f"Deleted {s.emoji} {s.file_id}")
+                    done = True
+                except Exception as e:
+                    counter += 1
+                    bot.send_message(USER_ID, f"Failed to delete ({counter}): {e}")
+                    if counter < 10:
+                        sleep(30)
+                        continue
+                    else:
+                        break
+            sleep(15)
 
         files = {
             "💸": "btc.png",
@@ -488,23 +503,26 @@ if __name__ == "__main__":
         for emoji, png_file in files.items():
             if emoji == "🙏":
                 continue
-            try:
+            done = False
+            counter = 0
+            while not done:
                 with open(png_file, "rb") as sticker:
-                    req = bot.add_sticker_to_set(
-                        USER_ID,
-                        name=PACK_NAME,
-                        png_sticker=sticker,
-                        emojis=emoji,
-                        tgs_sticker=None,
-                    )
-                    sleep(15)
-                if emoji in delete.keys():
-                    req = bot.delete_sticker_from_set(delete[emoji])
-                print(f"Delete {emoji} {s.file_id}")
-            except Exception as e:
-                bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
-                sleep(60)
-                continue
-
+                    try:
+                        req = bot.add_sticker_to_set(
+                            USER_ID,
+                            name=PACK_NAME,
+                            png_sticker=sticker,
+                            emojis=emoji,
+                            tgs_sticker=None,
+                        )
+                        done = True
+                    except Exception as e:
+                        counter += 1
+                        bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
+                        if counter < 10:
+                            sleep(30)
+                            continue
+                        else:
+                            break
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
