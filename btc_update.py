@@ -478,28 +478,23 @@ if __name__ == "__main__":
         for emoji, png_file in files.items():
             if emoji == "🙏":
                 continue
-            done = False
-            counter = 0
-            while not done:
-                with open(png_file, "rb") as sticker:
-                    try:
-                        req = bot.add_sticker_to_set(
-                            USER_ID,
-                            name=PACK_NAME,
-                            png_sticker=sticker,
-                            emojis=emoji,
-                            tgs_sticker=None,
-                        )
-                        sleep(5)
-                        for s in old_pack.stickers:
-                            if s.emoji == emoji:
-                                req = bot.delete_sticker_from_set(s.file_id)
-                        done = True
-                    except Exception as e:
-                        counter += 1
-                        bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
-                        sleep(55)
-                sleep(30)
+            with open(png_file, "rb") as sticker:
+                try:
+                    req = bot.add_sticker_to_set(
+                        USER_ID,
+                        name=PACK_NAME,
+                        png_sticker=sticker,
+                        emojis=emoji,
+                        tgs_sticker=None,
+                    )
+                    sleep(5)
+                    for s in old_pack.stickers:
+                        if s.emoji == emoji:
+                            req = bot.delete_sticker_from_set(s.file_id)
+                    sleep(5)
+                except Exception as e:
+                    bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
+                    sleep(55)
 
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
