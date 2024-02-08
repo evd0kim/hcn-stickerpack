@@ -465,16 +465,7 @@ if __name__ == "__main__":
         etf_png = draw_etf_price(etf_data)
         etf_png.write_to_png("etf.png")
 
-        reqi = bot.get_sticker_set(PACK_NAME)
-
-        delete = {}
-
-        for s in reqi.stickers:
-            if s.emoji == "🙏":
-                continue
-            req = bot.delete_sticker_from_set(s.file_id)
-            print(f"Deleted {s.emoji} {s.file_id}")
-            sleep(5)
+        old_pack = bot.get_sticker_set(PACK_NAME)
 
         files = {
             "💸": "btc.png",
@@ -499,16 +490,16 @@ if __name__ == "__main__":
                             emojis=emoji,
                             tgs_sticker=None,
                         )
+                        sleep(5)
+                        for s in old_pack.stickers:
+                            if s.emoji == emoji:
+                                req = bot.delete_sticker_from_set(s.file_id)
                         done = True
                     except Exception as e:
                         counter += 1
                         bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
-                        if counter < 10:
-                            sleep(30)
-                            continue
-                        else:
-                            break
-            sleep(15)
+                        sleep(55)
+                sleep(30)
 
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
