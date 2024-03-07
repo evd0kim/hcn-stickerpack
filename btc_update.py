@@ -1,4 +1,6 @@
 #!/usr/bin/python
+import sys
+
 import cairocffi as cairo
 import io
 import math
@@ -21,6 +23,8 @@ RUB_PRICE_API_URL = "https://blockchain.info/ticker"
 BLOCK_HEIGHT_URL = "https://mempool.space/api/blocks/tip/height"
 
 date_now = datetime.utcnow()
+resp = requests.get(url=BLOCK_HEIGHT_URL)
+BTC_HEIGHT = int(resp.text)
 
 def load_fear():
     resp = requests.get(url=FNG_API_URL)
@@ -31,6 +35,16 @@ def load_fear():
     value_class = data["value_classification"]
     timestamp = date_now.strftime("%Y-%m-%d")
     return value, value_class, timestamp
+
+
+def load_halving():
+    halving = 210000
+    blocks_to_halving = (210000 - BTC_HEIGHT % halving)
+    done_percent = int((1 - blocks_to_halving / halving)*100)
+    days_to_halving = int(blocks_to_halving / 144)
+    timestamp = date_now.strftime("%Y-%m-%d")
+    print("{} - {}, {}, {}".format(blocks_to_halving, done_percent, days_to_halving, timestamp))
+    return done_percent, blocks_to_halving, days_to_halving, timestamp
 
 
 def draw_fear_gear():
@@ -78,8 +92,52 @@ def draw_fear_gear():
 
     return surface2
 
+def draw_halving_gear():
+    done_percent, blocks_to_halving, days_to_halving, timestamp = load_halving()
+    color = (247 / 255.0, 69 / 255.0, 226 / 255.0)
 
-def draw_arc(cr, value):
+    surface2 = cairo.ImageSurface(cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
+    cr2 = cairo.Context(surface2)
+
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
+    cr = cairo.Context(surface)
+
+    cr.rectangle(0, 0, WIDTH, HEIGHT)
+    cr.set_source_rgb(0, 0, 0)
+    cr.fill()
+
+    draw_arc(cr, done_percent, color)
+
+    draw_text(cr, (62, 76), (1, 1, 1), 24, "<b> Blocks " + str(blocks_to_halving) + "</b>")
+    draw_text(
+        cr,
+        (150, -125),
+        color,
+        42,
+        "<b>" + str(done_percent) + "%</b>",
+        center=True,
+    )
+    draw_text(cr, (0, 150), (1, 1, 1), 20, "<b>≅" + str(days_to_halving) + " days</b>", center=True)
+    draw_text(cr, (0, 190), (1, 1, 1), 16, "<b>" + timestamp + "</b>", center=True)
+
+    cr2.set_source_surface(surface, 1, 1)
+
+    draw_arrow(cr, done_percent, color)
+
+    w = 472 - 60
+    h = 448 - 60
+    print((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+    cr2.set_line_width(60)
+    cr2.rectangle((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+    cr2.set_line_join(cairo.LINE_JOIN_ROUND)
+    cr2.stroke_preserve()
+
+    cr2.clip()
+    cr2.paint()
+
+    return surface2
+
+def draw_arc(cr, value, color=None):
     # main arc
     cr.set_source_rgb(45 / 255.0, 7 / 255.0, 1 / 255.0)
     cr.set_line_width(20)
@@ -88,7 +146,10 @@ def draw_arc(cr, value):
     cr.arc(WIDTH / 2, HEIGHT / 2, 100, 3 * math.pi / 4, math.pi / 4)
     cr.stroke()
     # cope arc
-    cr.set_source_rgb(*fngColouring(value))
+    if color:
+        cr.set_source_rgb(*color)
+    else:
+        cr.set_source_rgb(*fngColouring(value))
     cr.set_line_width(20)
     cr.set_line_cap(cairo.LINE_CAP_ROUND)
     angle = map_interval(value, 0.0, 100.0, 0, 3 * math.pi / 2)
@@ -98,9 +159,12 @@ def draw_arc(cr, value):
     cr.stroke()
 
 
-def draw_arrow(cr, v):
+def draw_arrow(cr, v, color=None):
     cr.move_to(WIDTH / 2 + 10, HEIGHT / 2)
-    cr.set_source_rgb(*fngColouring(v))
+    if color:
+        cr.set_source_rgb(*color)
+    else:
+        cr.set_source_rgb(*fngColouring(v))
     cr.set_line_width(1)
     cr.arc(WIDTH / 2, HEIGHT / 2, 10, 0, math.pi * 2)
     angle = map_interval(v, 0.0, 100.0, 0, 3 * math.pi / 2)
@@ -121,8 +185,10 @@ def draw_arrow(cr, v):
 
 
 fear_png = draw_fear_gear()
-fear_png.write_to_png("example.png")
+fear_png.write_to_png("fear.png")
 
+halving_png = draw_halving_gear()
+halving_png.write_to_png("halving.png")
 
 def load_btc():
     out = {}
@@ -213,8 +279,7 @@ def load_btc():
     j = resp.json()
     out["btc_rub_price"] = update_currency(float(j["RUB"]["last"]))
 
-    resp = requests.get(url=BLOCK_HEIGHT_URL)
-    out["btc_height"] = resp.text
+    out["btc_height"] = str(BTC_HEIGHT)
     return out
 
 
@@ -471,12 +536,15 @@ if __name__ == "__main__":
             "💸": "btc.png",
             "💩": "eth.png",
             "🏦": "etf.png",
-            "😱": "example.png",
+            "😱": "fear.png",
+            "⛓": "halving.png",
             "🙏": f"./assets/donate.png",
         }
 
         for emoji, png_file in files.items():
             if emoji == "🙏":
+                continue
+            if emoji == "⛓" and BTC_HEIGHT % 144 != 0:
                 continue
             with open(png_file, "rb") as sticker:
                 try:
