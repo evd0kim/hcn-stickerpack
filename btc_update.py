@@ -531,6 +531,7 @@ if __name__ == "__main__":
         etf_png.write_to_png("etf.png")
 
         old_pack = bot.get_sticker_set(PACK_NAME)
+        old_emojis = [s.emoji for s in old_pack.stickers]
 
         files = {
             "💸": "btc.png",
@@ -544,7 +545,7 @@ if __name__ == "__main__":
         for emoji, png_file in files.items():
             if emoji == "🙏":
                 continue
-            if emoji == "⛓" and BTC_HEIGHT % 144 != 0:
+            if emoji == "⛓" and emoji in old_emojis and BTC_HEIGHT % 144 > 2:
                 continue
             with open(png_file, "rb") as sticker:
                 try:
