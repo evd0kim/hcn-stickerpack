@@ -108,7 +108,7 @@ def draw_halving_gear():
 
     draw_arc(cr, done_percent, color)
 
-    draw_text(cr, (62, 76), (1, 1, 1), 24, "<b> Blocks " + str(blocks_to_halving) + "</b>")
+    draw_text(cr, (62, 76), (1, 1, 1), 24, "<b>" + str(blocks_to_halving) + " blocks</b>")
     draw_text(
         cr,
         (150, -125),
@@ -117,7 +117,7 @@ def draw_halving_gear():
         "<b>" + str(done_percent) + "%</b>",
         center=True,
     )
-    draw_text(cr, (0, 150), (1, 1, 1), 20, "<b>≅" + str(days_to_halving) + " days</b>", center=True)
+    draw_text(cr, (0, 150), (1, 1, 1), 20, "<b>≅" + str(days_to_halving) + " days to halving</b>", center=True)
     draw_text(cr, (0, 190), (1, 1, 1), 16, "<b>" + timestamp + "</b>", center=True)
 
     cr2.set_source_surface(surface, 1, 1)
