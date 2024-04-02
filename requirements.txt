@@ -19,7 +19,7 @@ pangocffi==0.12.0
 peewee==3.17.0
 pillow==10.2.0
 pycparser==2.21
-pyTelegramBotAPI==4.16.1
+pyTelegramBotAPI @ git+https://github.com/evd0kim/pyTelegramBotAPI.git@4b18e08d886a0b1dda04272ef81329b0a5d63f16
 python-dateutil==2.8.2
 pytz==2023.3.post1
 requests==2.31.0
