@@ -545,7 +545,7 @@ if __name__ == "__main__":
         for emoji, png_file in files.items():
             if emoji == "🙏":
                 continue
-            if emoji == "⛓" and emoji in old_emojis and BTC_HEIGHT % 144 > 2:
+            if emoji == "⛓" and emoji in old_emojis:
                 continue
             with open(png_file, "rb") as sticker:
                 try:
@@ -556,14 +556,14 @@ if __name__ == "__main__":
                         emojis=emoji,
                         tgs_sticker=None,
                     )
-                    sleep(5)
+                    sleep(15)
                     for s in old_pack.stickers:
                         if s.emoji == emoji:
                             req = bot.delete_sticker_from_set(s.file_id)
-                    sleep(5)
+                    sleep(15)
                 except Exception as e:
                     bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
-                    sleep(55)
+                    sleep(60)
 
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
