@@ -42,7 +42,7 @@ def load_halving():
     blocks_to_halving = (210000 - BTC_HEIGHT % halving)
     done_percent = int((1 - blocks_to_halving / halving)*100)
     days_to_halving = int(blocks_to_halving / 144)
-    timestamp = date_now.strftime("%Y-%m-%d")
+    timestamp = (date_now + timedelta(days=days_to_halving)).strftime("%Y-%m-%d")
     print("{} - {}, {}, {}".format(blocks_to_halving, done_percent, days_to_halving, timestamp))
     return done_percent, blocks_to_halving, days_to_halving, timestamp
 
