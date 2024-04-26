@@ -143,6 +143,27 @@ def is_us_market_open_now():
     return market_open <= now_et.time() <= market_close
 
 
+def is_etf_posting_time():
+    # US market hours in Eastern Time (ET)
+    market_open = time(9, 30, 0)   # 9:30 AM
+    market_close = time(16, 20, 0)  # added 20 min margin to post "closed" market sticker
+
+    # Current time in UTC
+    now_utc = datetime.now(timezone.utc)
+
+    # Convert current UTC time to Eastern Time (ET)
+    # Eastern Time is UTC-5 (standard time) or UTC-4 (daylight saving time)
+    # Note: This approach does not account for daylight saving time changes
+    offset = -5 if now_utc.month < 3 or now_utc.month > 11 else -4
+    now_et = now_utc.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=offset)))
+
+    if now_et.weekday() > 4:
+        return False
+
+    # Check if current ET time is within US market hours
+    return market_open <= now_et.time() <= market_close
+
+
 if __name__ == "__main__":
     from os import getenv
 

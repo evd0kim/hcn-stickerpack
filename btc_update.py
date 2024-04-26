@@ -545,7 +545,7 @@ if __name__ == "__main__":
         for emoji, png_file in files.items():
             if emoji == "🙏":
                 continue
-            if emoji == "🏦" and not is_us_market_open_now():
+            if emoji == "🏦" and not is_etf_posting_time():
                 continue
             with open(png_file, "rb") as sticker:
                 try:
