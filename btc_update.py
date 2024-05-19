@@ -20,11 +20,25 @@ BTC_API_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"
 ETHBTC_API_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC"
 PRICE_API_URL = "https://api.binance.com/api/v3/ticker/price"
 RUB_PRICE_API_URL = "https://blockchain.info/ticker"
-BLOCK_HEIGHT_URL = "https://mempool.space/api/blocks/tip/height"
+
+# Tip and fees
+BLOCK_HEIGHT_URL = "https://bitcoinchainfees.strike.me/v1/fee-estimates"
+# Tip only
+# "https://mempool.space/api/blocks/tip/height"
 
 date_now = datetime.utcnow()
 resp = requests.get(url=BLOCK_HEIGHT_URL)
-BTC_HEIGHT = int(resp.text)
+# BTC_HEIGHT = int(resp.text)
+BTC_HEIGHT = int(resp.json()["current_block_height"])
+PRIO_FEE = int(resp.json()["fee_by_block_target"]["1"])/1000
+
+# Constants for the drawing tiles
+CELL_SIZE = 50  # Size of the grid cells
+GRID_SIZE_X = 6  # Number of cells per row and column
+GRID_SIZE_Y = 4
+SPACING = 5  # Spacing between cells
+CORNER_RADIUS = 5  # Radius for rounded corners
+
 
 def load_fear():
     resp = requests.get(url=FNG_API_URL)
@@ -39,11 +53,15 @@ def load_fear():
 
 def load_halving():
     halving = 210000
-    blocks_to_halving = (210000 - BTC_HEIGHT % halving)
-    done_percent = int((1 - blocks_to_halving / halving)*100)
+    blocks_to_halving = 210000 - BTC_HEIGHT % halving
+    done_percent = int((1 - blocks_to_halving / halving) * 100)
     days_to_halving = int(blocks_to_halving / 144)
     timestamp = (date_now + timedelta(days=days_to_halving)).strftime("%Y-%m-%d")
-    print("{} - {}, {}, {}".format(blocks_to_halving, done_percent, days_to_halving, timestamp))
+    print(
+        "{} - {}, {}, {}".format(
+            blocks_to_halving, done_percent, days_to_halving, timestamp
+        )
+    )
     return done_percent, blocks_to_halving, days_to_halving, timestamp
 
 
@@ -92,6 +110,116 @@ def draw_fear_gear():
 
     return surface2
 
+
+def draw_rounded_rectangle(context, x, y, width, height, radius):
+    """
+    Draws a rounded rectangle with a given size, position, and corner radius using precise transitions between arcs and lines.
+    """
+    if radius > min(width, height) / 2:
+        radius = min(width, height) / 2
+
+    context.new_path()
+
+    # Start at the top-left corner, move to the start point of the first arc
+    context.move_to(x + radius, y)
+
+    # Top side
+    context.line_to(x + width - radius, y)
+    context.arc(x + width - radius, y + radius, radius, 1.5 * math.pi, 2 * math.pi)
+
+    # Right side
+    context.line_to(x + width, y + height - radius)
+    context.arc(x + width - radius, y + height - radius, radius, 0, 0.5 * math.pi)
+
+    # Bottom side
+    context.line_to(x + radius, y + height)
+    context.arc(x + radius, y + height - radius, radius, 0.5 * math.pi, math.pi)
+
+    # Left side
+    context.line_to(x, y + radius)
+    context.arc(x + radius, y + radius, radius, math.pi, 1.5 * math.pi)
+
+    context.close_path()
+    context.fill()
+
+
+def draw_grid(
+    context, x0, y0, cell_size, grid_size_x, grid_size_y, spacing, radius, progress
+):
+    for i in range(grid_size_y):
+        for j in range(grid_size_x):
+            # Calculate position with spacing
+            x = j * cell_size + (j + 1) * spacing + x0
+            y = i * cell_size + (i + 1) * spacing + y0
+            print(f"{x} {y}")
+            # Set alternating colors
+            if i * grid_size_x + j + 1 <= grid_size_x * grid_size_y * progress / 100.0:
+                context.set_source_rgb(247 / 255.0, 69 / 255.0, 226 / 255.0)
+            else:
+                context.set_source_rgb(0.9, 0.9, 0.9)  # Light gray
+            # Draw rounded rectangle
+            draw_rounded_rectangle(context, x, y, cell_size, cell_size, radius)
+
+
+def draw_halving_tile():
+    done_percent, blocks_to_halving, days_to_halving, timestamp = load_halving()
+    surface2 = cairo.ImageSurface(cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
+    cr2 = cairo.Context(surface2)
+
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
+    cr = cairo.Context(surface)
+    cr.rectangle(0, 0, WIDTH, HEIGHT)
+    cr.set_source_rgb(0, 0, 0)
+    cr.fill()
+
+    draw_text(
+        cr, (62, 76), (1, 1, 1), 24, "<b>" + str(blocks_to_halving) + " blocks</b>"
+    )
+    draw_text(
+        cr,
+        (385, 76),
+        (1, 1, 1),
+        24,
+        "<b>" + str(done_percent) + "%</b>",
+    )
+    draw_text(
+        cr,
+        (0, 150),
+        (1, 1, 1),
+        20,
+        "<b>≅" + str(days_to_halving) + " days to halving</b>",
+        center=True,
+    )
+    draw_text(cr, (0, 190), (1, 1, 1), 16, "<b>" + timestamp + "</b>", center=True)
+
+    draw_grid(
+        cr,
+        (WIDTH - (CELL_SIZE + SPACING) * GRID_SIZE_X) / 2,
+        (HEIGHT - (CELL_SIZE + SPACING) * GRID_SIZE_Y) / 2,
+        CELL_SIZE,
+        GRID_SIZE_X,
+        GRID_SIZE_Y,
+        SPACING,
+        CORNER_RADIUS,
+        done_percent,
+    )
+
+    cr2.set_source_surface(surface, 1, 1)
+
+    w = 472 - 60
+    h = 448 - 60
+    print((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+    cr2.set_line_width(60)
+    cr2.rectangle((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+    cr2.set_line_join(cairo.LINE_JOIN_ROUND)
+    cr2.stroke_preserve()
+
+    cr2.clip()
+    cr2.paint()
+
+    return surface2
+
+
 def draw_halving_gear():
     done_percent, blocks_to_halving, days_to_halving, timestamp = load_halving()
     color = (247 / 255.0, 69 / 255.0, 226 / 255.0)
@@ -108,7 +236,9 @@ def draw_halving_gear():
 
     draw_arc(cr, done_percent, color)
 
-    draw_text(cr, (62, 76), (1, 1, 1), 24, "<b>" + str(blocks_to_halving) + " blocks</b>")
+    draw_text(
+        cr, (62, 76), (1, 1, 1), 24, "<b>" + str(blocks_to_halving) + " blocks</b>"
+    )
     draw_text(
         cr,
         (150, -125),
@@ -117,7 +247,14 @@ def draw_halving_gear():
         "<b>" + str(done_percent) + "%</b>",
         center=True,
     )
-    draw_text(cr, (0, 150), (1, 1, 1), 20, "<b>≅" + str(days_to_halving) + " days to halving</b>", center=True)
+    draw_text(
+        cr,
+        (0, 150),
+        (1, 1, 1),
+        20,
+        "<b>≅" + str(days_to_halving) + " days to halving</b>",
+        center=True,
+    )
     draw_text(cr, (0, 190), (1, 1, 1), 16, "<b>" + timestamp + "</b>", center=True)
 
     cr2.set_source_surface(surface, 1, 1)
@@ -136,6 +273,7 @@ def draw_halving_gear():
     cr2.paint()
 
     return surface2
+
 
 def draw_arc(cr, value, color=None):
     # main arc
@@ -187,8 +325,9 @@ def draw_arrow(cr, v, color=None):
 fear_png = draw_fear_gear()
 fear_png.write_to_png("fear.png")
 
-halving_png = draw_halving_gear()
+halving_png = draw_halving_tile()  # draw_halving_gear()
 halving_png.write_to_png("halving.png")
+
 
 def load_btc():
     out = {}
@@ -293,23 +432,43 @@ def load_etf():
         "FBTC": 0.00896861,
         "IBIT": 0.00498008,
         "ARKB": 0.061728395,
-        #"BTCO": 1,
-        #"BTCW": 1,
-        #"BRRR": 1,
-        #"PBTC": 1,
+        # "BTCO": 1,
+        # "BTCW": 1,
+        # "BRRR": 1,
+        # "PBTC": 1,
     }
 
-    tickers = yf.Tickers(' '.join(etfs.keys()))
+    tickers = yf.Tickers(" ".join(etfs.keys()))
 
     for t in etfs.keys():
         try:
             etf = tickers.tickers[t]
-            if is_us_market_open_now() and etf.info.get("bid") and etf.info.get("ask") and etf.info.get("open"):
-                out[t] =((etf.info.get("bid") + etf.info.get("ask")) * 0.5 - etf.info.get("open"))/etf.info.get("open")*100.
+            if (
+                is_us_market_open_now()
+                and etf.info.get("bid")
+                and etf.info.get("ask")
+                and etf.info.get("open")
+            ):
+                out[t] = (
+                    (
+                        (etf.info.get("bid") + etf.info.get("ask")) * 0.5
+                        - etf.info.get("open")
+                    )
+                    / etf.info.get("open")
+                    * 100.0
+                )
             elif not is_us_market_open_now() and etf.info.get("close"):
-                out[t] = (etf.info.get("close") - etf.info.get("previousClose")) / etf.info.get("close") * 100.
+                out[t] = (
+                    (etf.info.get("close") - etf.info.get("previousClose"))
+                    / etf.info.get("close")
+                    * 100.0
+                )
             else:
-                out[t] = (etf.info.get("open") - etf.info.get("previousClose")) / etf.info.get("open") * 100.
+                out[t] = (
+                    (etf.info.get("open") - etf.info.get("previousClose"))
+                    / etf.info.get("open")
+                    * 100.0
+                )
         except Exception as etf_exception:
             raise etf_exception
 
@@ -345,9 +504,9 @@ def draw_btc_price(data):
     cr.fill()
 
     dt = date_now.strftime("%H:%M %a, %d.%m.%y (UTC%z)")
-    draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>BTC</b>  Bitcoin")
-    draw_text(cr, (70, 360 + 40), (1, 1, 1), 16, dt)
-    draw_text(cr, (70, 360 + 70), (1, 1, 1), 16, data["btc_height"])
+    draw_text(cr, (70, 350), (1, 1, 1), 20, "<b>BTC</b>  Bitcoin")
+    draw_text(cr, (70, 350 + 40), (1, 1, 1), 16, dt)
+    draw_text(cr, (70, 350 + 80), (1, 1, 1), 16, f'{data["btc_height"]} ⛓️ <b>{PRIO_FEE}</b> sat/vbyte')
 
     draw_text(cr, (70, 65), (1, 1, 1), 50, "<b>$" + data["btc_usd_price"] + "</b>")
     draw_text(cr, (70, 65 + 80), (1, 1, 1), 25, data["btc_eur_price"])
@@ -429,7 +588,7 @@ def draw_etf_price(data):
 
     draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>ETF</b>  Bitcoin, spot")
     dt = date_now.strftime("%H:%M %a, %d.%m.%y (UTC%z)")
-    draw_text(cr, (70, 360 + 40), (1, 1, 1), 16, dt + " " + status )
+    draw_text(cr, (70, 360 + 40), (1, 1, 1), 16, dt + " " + status)
     draw_text(cr, (70, 360 + 70), (1, 1, 1), 16, "🇺🇸")
 
     cr2.set_source_surface(surface, 1, 1)
@@ -562,7 +721,10 @@ if __name__ == "__main__":
                             req = bot.delete_sticker_from_set(s.file_id)
                     sleep(30)
                 except Exception as e:
-                    bot.send_message(USER_ID, f"Sticker pack upload is getting rate limited by Telegram: {e}")
+                    bot.send_message(
+                        USER_ID,
+                        f"Sticker pack upload is getting rate limited by Telegram: {e}",
+                    )
                     sleep(60)
 
     except Exception as e:
