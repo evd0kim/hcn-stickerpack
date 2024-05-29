@@ -33,11 +33,11 @@ BTC_HEIGHT = int(resp.json()["current_block_height"])
 PRIO_FEE = int(resp.json()["fee_by_block_target"]["1"])/1000
 
 # Constants for the drawing tiles
-CELL_SIZE = 50  # Size of the grid cells
-GRID_SIZE_X = 6  # Number of cells per row and column
-GRID_SIZE_Y = 4
-SPACING = 5  # Spacing between cells
-CORNER_RADIUS = 5  # Radius for rounded corners
+CELL_SIZE = 30  # Size of the grid cells
+GRID_SIZE_X = 12  # Number of cells per row and column
+GRID_SIZE_Y = 7
+SPACING = 3  # Spacing between cells
+CORNER_RADIUS = 3  # Radius for rounded corners
 
 
 def load_fear():
