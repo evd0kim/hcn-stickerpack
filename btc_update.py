@@ -676,6 +676,7 @@ if __name__ == "__main__":
     TELEGRAM_BOT_TOKEN = getenv("TG_BOT_TOKEN")
 
     bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN, parse_mode=None)
+    ignore_load = []
 
     try:
         btc_data = load_btc()
@@ -685,9 +686,10 @@ if __name__ == "__main__":
         eth_png = draw_eth_price(btc_data)
         eth_png.write_to_png("eth.png")
 
-        etf_data = load_etf()
-        etf_png = draw_etf_price(etf_data)
-        etf_png.write_to_png("etf.png")
+        if is_etf_posting_time():
+            etf_data = load_etf()
+            etf_png = draw_etf_price(etf_data)
+            etf_png.write_to_png("etf.png")
 
         old_pack = bot.get_sticker_set(PACK_NAME)
         old_emojis = [s.emoji for s in old_pack.stickers]
@@ -702,12 +704,12 @@ if __name__ == "__main__":
         }
 
         for emoji, png_file in files.items():
-            if emoji == "🙏":
-                continue
-            if emoji == "🏦" and not is_etf_posting_time():
-                continue
-            with open(png_file, "rb") as sticker:
-                try:
+            try:
+                if emoji == "🙏":
+                    continue
+                if emoji == "🏦" and not is_etf_posting_time():
+                    continue
+                with open(png_file, "rb") as sticker:
                     req = bot.add_sticker_to_set(
                         USER_ID,
                         name=PACK_NAME,
@@ -720,12 +722,12 @@ if __name__ == "__main__":
                         if s.emoji == emoji:
                             req = bot.delete_sticker_from_set(s.file_id)
                     sleep(30)
-                except Exception as e:
-                    bot.send_message(
-                        USER_ID,
-                        f"Sticker pack upload is getting rate limited by Telegram: {e}",
-                    )
-                    sleep(60)
+            except Exception as e:
+                bot.send_message(
+                    USER_ID,
+                    f"Sticker pack upload is getting rate limited by Telegram: {e}",
+                )
+                sleep(60)
 
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
