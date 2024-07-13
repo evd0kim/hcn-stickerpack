@@ -43,7 +43,6 @@ CORNER_RADIUS = 3  # Radius for rounded corners
 def load_fear():
     resp = requests.get(url=FNG_API_URL)
     j = resp.json()
-    print(j["data"][0])
     data = j["data"][0]
     value = int(data["value"])
     value_class = data["value_classification"]
@@ -57,11 +56,11 @@ def load_halving():
     done_percent = int((1 - blocks_to_halving / halving) * 100)
     days_to_halving = int(blocks_to_halving / 144)
     timestamp = (date_now + timedelta(days=days_to_halving)).strftime("%Y-%m-%d")
-    print(
-        "{} - {}, {}, {}".format(
-            blocks_to_halving, done_percent, days_to_halving, timestamp
-        )
-    )
+    #print(
+    #    "{} - {}, {}, {}".format(
+    #        blocks_to_halving, done_percent, days_to_halving, timestamp
+    #    )
+    #)
     return done_percent, blocks_to_halving, days_to_halving, timestamp
 
 
@@ -92,14 +91,13 @@ def draw_fear_gear():
     draw_text(cr, (0, 150), (1, 1, 1), 20, "<b>Fear &amp; Greed Index</b>", center=True)
     draw_text(cr, (0, 190), (1, 1, 1), 16, "<b>" + timestamp + "</b>", center=True)
 
-    print(fngColouring(value))
     cr2.set_source_surface(surface, 1, 1)
 
     draw_arrow(cr, value)
 
     w = 472 - 60
     h = 448 - 60
-    print((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+
     cr2.set_line_width(60)
     cr2.rectangle((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
     cr2.set_line_join(cairo.LINE_JOIN_ROUND)
@@ -137,7 +135,7 @@ def draw_fear_troll():
 
     w = 472 - 60
     h = 448 - 60
-    print((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+
     cr2.set_line_width(60)
     cr2.rectangle((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
     cr2.set_line_join(cairo.LINE_JOIN_ROUND)
@@ -189,7 +187,6 @@ def draw_grid(
             # Calculate position with spacing
             x = j * cell_size + (j + 1) * spacing + x0
             y = i * cell_size + (i + 1) * spacing + y0
-            print(f"{x} {y}")
             # Set alternating colors
             if i * grid_size_x + j + 1 <= grid_size_x * grid_size_y * progress / 100.0:
                 context.set_source_rgb(247 / 255.0, 69 / 255.0, 226 / 255.0)
@@ -246,7 +243,7 @@ def draw_halving_tile():
 
     w = 472 - 60
     h = 448 - 60
-    print((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+
     cr2.set_line_width(60)
     cr2.rectangle((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
     cr2.set_line_join(cairo.LINE_JOIN_ROUND)
@@ -301,7 +298,7 @@ def draw_halving_gear():
 
     w = 472 - 60
     h = 448 - 60
-    print((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+
     cr2.set_line_width(60)
     cr2.rectangle((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
     cr2.set_line_join(cairo.LINE_JOIN_ROUND)
@@ -393,13 +390,11 @@ def load_btc():
 
     resp = requests.get(url=BTC_API_URL)
     j = resp.json()
-    # print(j)
     out["btc_usd_price"] = update_currency(float(j["lastPrice"]))
     out["btc_percent"] = float(j["priceChangePercent"])
 
     resp = requests.get(url=ETHBTC_API_URL)
     j = resp.json()
-    # print(j)
     out["eth_btc_price"] = update_btc(float(j["lastPrice"]))
     out["eth_percent"] = float(j["priceChangePercent"])
 
@@ -763,6 +758,7 @@ if __name__ == "__main__":
                     for s in old_pack.stickers:
                         if s.emoji == emoji:
                             req = bot.delete_sticker_from_set(s.file_id)
+                    print(f"{emoji}: upload complete, old deleted, sleeping now")
                     sleep(30)
             except Exception as e:
                 bot.send_message(
