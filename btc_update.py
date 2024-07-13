@@ -742,7 +742,7 @@ if __name__ == "__main__":
             "😱": "fear.png",
             "⛓": "halving.png",
             "🙏": f"./assets/donate.png",
-            #"🤡": "fear-troll.png",
+            "🤡": "fear-troll.png",
         }
 
         for emoji, png_file in files.items():
