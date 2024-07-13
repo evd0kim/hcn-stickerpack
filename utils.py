@@ -119,6 +119,54 @@ def fngColouring(c):
         color = (0.718, 0.302, 0.204)
     return color
 
+
+def fngTrollColouring(c):
+    # Define gradient color points from blue to pinky
+    colors = [
+        (90, (0.0, 0.749, 1.0)),  # Deep Sky Blue
+        (75, (0.529, 0.808, 0.922)),  # Light Sky Blue
+        (63, (0.541, 0.169, 0.886)),  # Blue Violet
+        (54, (0.58, 0.439, 0.859)),  # Medium Slate Blue
+        (46, (0.729, 0.333, 0.827)),  # Medium Purple
+        (35, (0.847, 0.529, 0.945)),  # Medium Violet Red
+        (25, (1.0, 0.549, 0.776)),  # Hot Pink
+        (10, (1.0, 0.607, 0.835)),  # Pink
+        (0, (1.0, 0.752, 0.796))  # Light Pink
+    ]
+
+    # Find the appropriate color range
+    for i in range(len(colors) - 1):
+        if c >= colors[i + 1][0]:
+            c1, color1 = colors[i]
+            c2, color2 = colors[i + 1]
+            break
+    else:
+        # If c is less than the lowest range, use the lowest color
+        return colors[-1][1]
+
+    # Linear interpolation
+    t = (c - c2) / (c1 - c2)
+    color = tuple(color1[j] * (1 - t) + color2[j] * t for j in range(3))
+
+    return color
+
+
+def greedToTroll(v):
+    if v == "Extreme Fear":
+        return "Extreme pussies"
+    elif v == "Fear":
+        return "Little bitches"
+    elif v == "Neutral":
+        return "Snowflakes"
+    elif v == "Greed":
+        return "Diversificatoors"
+    elif v == "Extreme Greed":
+        return "Yolo Degens"
+    else:
+        return "Trolldicator"
+
+
+
 def map_interval(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 

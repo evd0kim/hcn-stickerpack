@@ -111,6 +111,44 @@ def draw_fear_gear():
     return surface2
 
 
+def draw_fear_troll():
+    value, value_class, timestamp = load_fear()
+    value_class = greedToTroll(value_class)
+
+    surface2 = cairo.ImageSurface(cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
+    cr2 = cairo.Context(surface2)
+
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
+    cr = cairo.Context(surface)
+
+    cr.rectangle(0, 0, WIDTH, HEIGHT)
+    cr.set_source_rgb(0, 0, 0)
+    cr.fill()
+
+    draw_arc(cr, value, color=fngTrollColouring(value))
+
+    draw_text(cr, (62, 76), (1, 1, 1), 24, "<b>" + value_class + "</b>")
+    draw_text(cr, (0, 150), (1, 1, 1), 20, "<b>Pussy &amp; Degen Index</b>", center=True)
+    draw_text(cr, (0, 190), (1, 1, 1), 16, "<b>" + timestamp + "</b>", center=True)
+
+    cr2.set_source_surface(surface, 1, 1)
+
+    draw_arrow(cr, value, color=fngTrollColouring(value))
+
+    w = 472 - 60
+    h = 448 - 60
+    print((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+    cr2.set_line_width(60)
+    cr2.rectangle((WIDTH - w) / 2, (HEIGHT - h) / 2, w, h)
+    cr2.set_line_join(cairo.LINE_JOIN_ROUND)
+    cr2.stroke_preserve()
+
+    cr2.clip()
+    cr2.paint()
+
+    return surface2
+
+
 def draw_rounded_rectangle(context, x, y, width, height, radius):
     """
     Draws a rounded rectangle with a given size, position, and corner radius using precise transitions between arcs and lines.
@@ -324,6 +362,9 @@ def draw_arrow(cr, v, color=None):
 
 fear_png = draw_fear_gear()
 fear_png.write_to_png("fear.png")
+
+fear_troll_png = draw_fear_troll()
+fear_troll_png.write_to_png("fear-troll.png")
 
 halving_png = draw_halving_tile()  # draw_halving_gear()
 halving_png.write_to_png("halving.png")
@@ -701,6 +742,7 @@ if __name__ == "__main__":
             "😱": "fear.png",
             "⛓": "halving.png",
             "🙏": f"./assets/donate.png",
+            #"🤡": "fear-troll.png",
         }
 
         for emoji, png_file in files.items():
