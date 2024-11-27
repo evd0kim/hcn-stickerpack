@@ -546,7 +546,7 @@ def draw_btc_price(data):
 
     draw_text(cr, (70, 65), (1, 1, 1), 50, "<b>$" + data["btc_usd_price"] + "</b>")
     draw_text(cr, (70, 65 + 80), (1, 1, 1), 25, data["btc_eur_price"])
-    draw_text(cr, (240, 65 + 80), (1, 1, 1), 25, "€")
+    draw_text(cr, (247, 65 + 80), (1, 1, 1), 25, "€")
 
     draw_text(
         cr,
@@ -557,15 +557,15 @@ def draw_btc_price(data):
     )
     draw_text(
         cr,
-        (240, 65 + 80 + 25 + 15),
+        (247, 65 + 80 + 25 + 15),
         (1, 1, 1),
         25,
         "$A",
     )
     draw_text(cr, (70, 65 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["btc_uah_price"])
-    draw_text(cr, (240, 65 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₴")
+    draw_text(cr, (247, 65 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₴")
     draw_text(cr, (70, 65 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["btc_rub_price"])
-    draw_text(cr, (240, 65 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₽")
+    draw_text(cr, (247, 65 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₽")
 
     draw_triagle(cr, (350, 375), data["btc_percent"])
 
@@ -739,7 +739,7 @@ if __name__ == "__main__":
             "🙏": f"./assets/donate.png",
             "🤡": "fear-troll.png",
         }
-
+        1/0
         for emoji, png_file in files.items():
             try:
                 if emoji == "🙏":
