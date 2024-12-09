@@ -553,15 +553,15 @@ def draw_btc_price(data):
     dt = date_now.strftime("%H:%M %a, %d.%m.%y (UTC%z)")
     draw_text(cr, (70, 350), (1, 1, 1), 20, "<b>BTC</b>  Bitcoin")
     draw_text(cr, (70, 350 + 40), (1, 1, 1), 16, dt)
-    draw_text(cr, (70, 350 + 80), (1, 1, 1), 16, f'{data["btc_height"]} ⛓️ <b>{PRIO_FEE}</b> sat/vbyte')
+    draw_text(cr, (70, 350 + 85), (1, 1, 1), 16, f'{data["btc_height"]} ⛓️ <b>{PRIO_FEE}</b> sat/vbyte')
 
     draw_text(cr, (70, 65), (1, 1, 1), 50, "<b>$" + data["btc_usd_price"] + "</b>")
-    draw_text(cr, (70, 65 + 80), (1, 1, 1), 25, data["btc_eur_price"])
-    draw_text(cr, (300, 65 + 80), (1, 1, 1), 25, "€")
+    draw_text(cr, (70, 65 + 85), (1, 1, 1), 25, data["btc_eur_price"])
+    draw_text(cr, (310, 65 + 85), (1, 1, 1), 25, "€")
 
     draw_text(
         cr,
-        (70, 65 + 80 + 25 + 15),
+        (70, 65 + 85 + 25 + 15),
         (1, 1, 1),
         25,
         #data["btc_aud_price"],
@@ -569,16 +569,16 @@ def draw_btc_price(data):
     )
     draw_text(
         cr,
-        (300, 65 + 80 + 25 + 15),
+        (310, 65 + 85 + 25 + 15),
         (1, 1, 1),
         25,
         #"$A",
         "Rp",
     )
-    draw_text(cr, (70, 65 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["btc_uah_price"])
-    draw_text(cr, (300, 65 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₴")
-    draw_text(cr, (70, 65 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["btc_rub_price"])
-    draw_text(cr, (300, 65 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₽")
+    draw_text(cr, (70, 65 + 85 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["btc_uah_price"])
+    draw_text(cr, (310, 65 + 85 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₴")
+    draw_text(cr, (70, 65 + 85 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["btc_rub_price"])
+    draw_text(cr, (310, 65 + 85 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₽")
 
     draw_triagle(cr, (350, 375), data["btc_percent"])
 
