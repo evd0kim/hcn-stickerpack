@@ -18,6 +18,7 @@ FNG_API_URL = "https://api.alternative.me/fng/"
 AUD_API_URL = "https://www.coinspot.com.au/pubapi/v2/latest"
 BTC_API_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"
 ETHBTC_API_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC"
+IDRBTC_API_URL = "https://indodax.com/api/ticker/btcidr"
 PRICE_API_URL = "https://api.binance.com/api/v3/ticker/price"
 RUB_PRICE_API_URL = "https://blockchain.info/ticker"
 
@@ -369,6 +370,9 @@ halving_png.write_to_png("halving.png")
 
 def load_btc():
     out = {}
+    resp = requests.get(url=IDRBTC_API_URL)
+    j = resp.json()
+    out["btc_idr_price"] = update_currency(float(j["ticker"]["last"]))
     resp = requests.get(url=AUD_API_URL)
     j = resp.json()
     out["btc_aud_price"] = next(
@@ -387,7 +391,14 @@ def load_btc():
         ),
         None,
     )
-
+    out["eth_aud_price"] = next(
+        (
+            update_currency(float(v["last"]))
+            for k, v in j["prices"].items()
+            if k == "eth"
+        ),
+        None,
+    )
     resp = requests.get(url=BTC_API_URL)
     j = resp.json()
     out["btc_usd_price"] = update_currency(float(j["lastPrice"]))
@@ -546,26 +557,28 @@ def draw_btc_price(data):
 
     draw_text(cr, (70, 65), (1, 1, 1), 50, "<b>$" + data["btc_usd_price"] + "</b>")
     draw_text(cr, (70, 65 + 80), (1, 1, 1), 25, data["btc_eur_price"])
-    draw_text(cr, (260, 65 + 80), (1, 1, 1), 25, "€")
+    draw_text(cr, (300, 65 + 80), (1, 1, 1), 25, "€")
 
     draw_text(
         cr,
         (70, 65 + 80 + 25 + 15),
         (1, 1, 1),
         25,
-        data["btc_aud_price"],
+        #data["btc_aud_price"],
+        data["btc_idr_price"],
     )
     draw_text(
         cr,
-        (260, 65 + 80 + 25 + 15),
+        (300, 65 + 80 + 25 + 15),
         (1, 1, 1),
         25,
-        "$A",
+        #"$A",
+        "Rp",
     )
     draw_text(cr, (70, 65 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["btc_uah_price"])
-    draw_text(cr, (260, 65 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₴")
+    draw_text(cr, (300, 65 + 80 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₴")
     draw_text(cr, (70, 65 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["btc_rub_price"])
-    draw_text(cr, (260, 65 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₽")
+    draw_text(cr, (300, 65 + 80 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₽")
 
     draw_triagle(cr, (350, 375), data["btc_percent"])
 
