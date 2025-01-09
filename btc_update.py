@@ -557,28 +557,29 @@ def draw_btc_price(data):
 
     draw_text(cr, (70, 65), (1, 1, 1), 50, "<b>$" + data["btc_usd_price"] + "</b>")
     draw_text(cr, (70, 65 + 85), (1, 1, 1), 25, data["btc_eur_price"])
-    draw_text(cr, (310, 65 + 85), (1, 1, 1), 25, "€")
+    draw_text(cr, (250, 65 + 85), (1, 1, 1), 25, "€")
 
     draw_text(
         cr,
         (70, 65 + 85 + 25 + 15),
         (1, 1, 1),
         25,
-        #data["btc_aud_price"],
-        data["btc_uah_price"],
+        data["btc_aud_price"],
     )
     draw_text(
         cr,
-        (310, 65 + 85 + 25 + 15),
+        (250, 65 + 85 + 25 + 15),
         (1, 1, 1),
         25,
-        #"$A",
-        "₴",
+        "$A",
     )
+    draw_text(cr, (70, 65 + 85 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["btc_uah_price"])
+    draw_text(cr, (250, 65 + 85 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "₴")
     draw_text(cr, (70, 65 + 85 + 25 * 2 + 15 * 2), (1, 1, 1), 25, data["btc_rub_price"])
-    draw_text(cr, (310, 65 + 85 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₽")
-    draw_text(cr, (70, 65 + 85 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["btc_idr_price"])
-    draw_text(cr, (310, 65 + 85 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "Rp")
+    draw_text(cr, (250, 65 + 85 + 25 * 2 + 15 * 2), (1, 1, 1), 25, "₽")
+    # 310 - IDR billions
+    #draw_text(cr, (70, 65 + 85 + 25 * 3 + 15 * 3), (1, 1, 1), 25, data["btc_idr_price"])
+    #draw_text(cr, (310, 65 + 85 + 25 * 3 + 15 * 3), (1, 1, 1), 25, "Rp")
 
     draw_triagle(cr, (350, 375), data["btc_percent"])
 
