@@ -490,30 +490,47 @@ def load_etf():
     for t in etfs.keys():
         try:
             etf = tickers.tickers[t]
+            out[t] = {}
+            out[t]['cap'] = etf.info.get("totalAssets")
             if (
                 is_us_market_open_now()
                 and etf.info.get("bid")
                 and etf.info.get("ask")
                 and etf.info.get("open")
             ):
-                out[t] = (
-                    (
-                        (etf.info.get("bid") + etf.info.get("ask")) * 0.5
-                        - etf.info.get("open")
-                    )
-                    / etf.info.get("open")
+                # out[t] = (
+                #     (
+                #         (etf.info.get("bid") + etf.info.get("ask")) * 0.5
+                #         - etf.info.get("open")
+                #     )
+                #     / etf.info.get("open")
+                #     * 100.0
+                # )
+                out[t]['price'] = (
+                    (etf.info.get("regularMarketPrice") - etf.info.get("navPrice"))
+                    / etf.info.get("navPrice")
                     * 100.0
                 )
             elif not is_us_market_open_now() and etf.info.get("close"):
-                out[t] = (
-                    (etf.info.get("close") - etf.info.get("previousClose"))
-                    / etf.info.get("close")
+                # out[t] = (
+                #     (etf.info.get("close") - etf.info.get("previousClose"))
+                #     / etf.info.get("close")
+                #     * 100.0
+                # )
+                out[t]['price'] = (
+                    (etf.info.get("close") - etf.info.get("navPrice"))
+                    / etf.info.get("navPrice")
                     * 100.0
                 )
             else:
-                out[t] = (
-                    (etf.info.get("open") - etf.info.get("previousClose"))
-                    / etf.info.get("open")
+                # out[t] = (
+                #     (etf.info.get("open") - etf.info.get("previousClose"))
+                #     / etf.info.get("open")
+                #     * 100.0
+                # )
+                out[t]['price'] = (
+                    (etf.info.get("previousClose") - etf.info.get("navPrice"))
+                    / etf.info.get("navPrice")
                     * 100.0
                 )
         except Exception as etf_exception:
@@ -627,16 +644,18 @@ def draw_etf_price(data):
     cr.fill()
 
     space = 0
-    for ticker, delta in data.items():
+
+    for ticker, cap, delta in sort_by_market_cap(data):
         draw_text(cr, (70, 65 + space), (1, 1, 1), 20, ticker)
-        draw_triagle(cr, (70 + 110, 80 + space), delta, True)
+        draw_text(cr, (70 + 110, 65 + space), (1, 1, 1), 20, format_large_number(cap))
+        draw_triagle(cr, (70 + 110  + 110, 80 + space), delta, True)
         space += 40
 
     status = "Closed 🔴"
     if is_us_market_open_now():
         status = "Open 🟢"
 
-    draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>ETF</b>  Bitcoin, spot")
+    draw_text(cr, (70, 360), (1, 1, 1), 20, "<b>ETF</b>  Bitcoin, price to NAV")
     dt = date_now.strftime("%H:%M %a, %d.%m.%y (UTC%z)")
     draw_text(cr, (70, 360 + 40), (1, 1, 1), 16, dt + " " + status)
     draw_text(cr, (70, 360 + 70), (1, 1, 1), 16, "🇺🇸")

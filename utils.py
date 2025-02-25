@@ -208,11 +208,51 @@ def is_etf_posting_time():
     if now_et.weekday() > 4:
         return False
 
+    # increase interval, once per hour
+    if now_et.timestamp() % 3600 > 450:
+        return False
+
     # Check if current ET time is within US market hours
     return market_open <= now_et.time() <= market_close
 
 
+def format_large_number(num, decimal_places=1, use_abbr=True):
+    if num is None or not isinstance(num, (int, float)):
+        return 'N/A'
+
+    abs_num = abs(num)
+    sign = '-' if num < 0 else ''
+
+    # Formatting options
+    billion = 1_000_000_000
+    million = 1_000_000
+    billion_label = 'B' if use_abbr else ' billion'
+    million_label = 'M' if use_abbr else ' million'
+
+    if abs_num >= billion:
+        return f"{sign}${abs_num / billion:.{decimal_places}f}{billion_label}"
+    elif abs_num >= million:
+        return f"{sign}${abs_num / million:.{decimal_places}f}{million_label}"
+    elif abs_num >= 1000:
+        return f"{sign}${abs_num:,.0f}"
+    else:
+        return f"{sign}${abs_num:.{decimal_places}f}"
+
+
+def sort_by_market_cap(crypto_etfs, reverse=True):
+    etf_list = [(symbol, data['cap'], data['price']) for symbol, data in crypto_etfs.items()]
+    sorted_etfs = sorted(etf_list, key=lambda x: x[1], reverse=reverse)
+    return sorted_etfs
+
+
 if __name__ == "__main__":
+    print(format_large_number(4272921344))  # "$4.3B"
+    print(format_large_number(4272921344, 2))  # "$4.27B"
+    print(format_large_number(4272921344, 1, False))  # "$4.3 billion"
+    print(format_large_number(27500000))  # "$27.5M"
+    print(format_large_number(27500000, 2, False))  # "$27.50 million"
+    print(format_large_number(8750))
+
     from os import getenv
 
     USER_ID = getenv("TG_USER_ID")
