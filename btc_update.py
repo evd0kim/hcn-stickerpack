@@ -47,7 +47,9 @@ def load_fear():
     data = j["data"][0]
     value = int(data["value"])
     value_class = data["value_classification"]
-    timestamp = date_now.strftime("%Y-%m-%d")
+    date_fear = datetime.fromtimestamp(int(data["timestamp"]))
+    #timestamp = date_fear.strftime("%Y-%m-%d")
+    timestamp = date_fear.strftime("%Y-%m-%d %I:%M %p")
     return value, value_class, timestamp
 
 
