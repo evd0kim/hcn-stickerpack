@@ -779,6 +779,8 @@ if __name__ == "__main__":
             try:
                 if emoji == "🙏":
                     continue
+                if emoji == "😱" and not is_fng_posting_time():
+                    continue
                 if emoji == "🏦" and not is_etf_posting_time():
                     continue
                 with open(png_file, "rb") as sticker:

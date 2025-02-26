@@ -10,6 +10,7 @@ import telebot
 
 WIDTH, HEIGHT = 512, 512
 
+
 def create_pack(png_file, user_id, name, bot):
     sticker = open(png_file, "rb")
     response = bot.create_new_sticker_set(
@@ -21,6 +22,7 @@ def create_pack(png_file, user_id, name, bot):
         tgs_sticker=None,
     )
     print(response)
+
 
 def load_svg(url) -> cairo.ImageSurface:
     return PNGSurface(Tree(url=f"./assets/{url}"), None, 1).cairo
@@ -53,7 +55,6 @@ def draw_text(ctx, pos, c, s, text, center=None):
 
     ctx.set_source_rgb(*c)
     pangocairo.show_layout(ctx, layout)
-
 
 
 def draw_triagle(cr, pos, v, white=False):
@@ -89,7 +90,7 @@ def draw_triagle(cr, pos, v, white=False):
 
 def update_currency(c):
     c = int(round(c))
-    currency ="{:,}".format(c)
+    currency = "{:,}".format(c)
     return currency.replace(",", " ").ljust(10)
 
 
@@ -166,13 +167,13 @@ def greedToTroll(v):
         return "Trolldicator"
 
 
-
 def map_interval(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
+
 def is_us_market_open_now():
     # US market hours in Eastern Time (ET)
-    market_open = time(9, 30, 0)   # 9:30 AM
+    market_open = time(9, 30, 0)  # 9:30 AM
     market_close = time(16, 0, 0)  # 4:00 PM
 
     # Current time in UTC
@@ -193,7 +194,7 @@ def is_us_market_open_now():
 
 def is_etf_posting_time():
     # US market hours in Eastern Time (ET)
-    market_open = time(9, 30, 0)   # 9:30 AM
+    market_open = time(9, 30, 0)  # 9:30 AM
     market_close = time(16, 20, 0)  # added 20 min margin to post "closed" market sticker
 
     # Current time in UTC
@@ -208,12 +209,22 @@ def is_etf_posting_time():
     if now_et.weekday() > 4:
         return False
 
-    # increase interval, once per hour
-    if now_et.timestamp() % 3600 > 450:
+    # Increase interval, once per hour
+    if now_utc.minute > 5:
         return False
 
     # Check if current ET time is within US market hours
     return market_open <= now_et.time() <= market_close
+
+
+def is_fng_posting_time():
+    now_utc = datetime.now(timezone.utc)
+
+    # Leaving just minutes for a while
+    if now_utc.minute > 5:
+        return False
+
+    return True
 
 
 def format_large_number(num, decimal_places=1, use_abbr=True):
