@@ -779,7 +779,8 @@ if __name__ == "__main__":
             try:
                 if emoji == "🙏":
                     continue
-                elif emoji == "😱" and not is_fng_posting_time():
+                elif emoji in ["⛓", "😱", "🤡"] and not is_fng_posting_time():
+                    # halving info once per day, too
                     continue
                 elif emoji == "🏦" and not is_etf_posting_time():
                     continue
