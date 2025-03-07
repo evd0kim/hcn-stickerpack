@@ -779,24 +779,27 @@ if __name__ == "__main__":
             try:
                 if emoji == "🙏":
                     continue
-                if emoji == "😱" and not is_fng_posting_time():
+                elif emoji == "😱" and not is_fng_posting_time():
                     continue
-                if emoji == "🏦" and not is_etf_posting_time():
+                elif emoji == "🏦" and not is_etf_posting_time():
                     continue
-                with open(png_file, "rb") as sticker:
-                    req = bot.add_sticker_to_set(
-                        USER_ID,
-                        name=PACK_NAME,
-                        png_sticker=sticker,
-                        emojis=emoji,
-                        tgs_sticker=None,
-                    )
-                    sleep(30)
-                    for s in old_pack.stickers:
-                        if s.emoji == emoji:
-                            req = bot.delete_sticker_from_set(s.file_id)
-                    print(f"{emoji}: upload complete, old deleted, sleeping now")
-                    sleep(30)
+                else:
+                    with open(png_file, "rb") as sticker:
+                        req = bot.add_sticker_to_set(
+                            USER_ID,
+                            name=PACK_NAME,
+                            png_sticker=sticker,
+                            emojis=emoji,
+                            tgs_sticker=None,
+                        )
+                        for s in old_pack.stickers:
+                            if s.emoji == emoji:
+                                req = bot.delete_sticker_from_set(s.file_id)
+                        bot.send_message(
+                            USER_ID,
+                            f"{emoji}: upload complete, old deleted, sleeping now",
+                        )
+                        sleep(30)
             except Exception as e:
                 bot.send_message(
                     USER_ID,

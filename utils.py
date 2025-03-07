@@ -220,11 +220,11 @@ def is_etf_posting_time():
 def is_fng_posting_time():
     now_utc = datetime.now(timezone.utc)
 
-    # Leaving just minutes for a while
-    if now_utc.minute > 5:
-        return False
+    # Leaving just once per day
+    if now_utc.minute < 5 and now_utc.hour < 1:
+        return True
 
-    return True
+    return False
 
 
 def format_large_number(num, decimal_places=1, use_abbr=True):
