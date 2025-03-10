@@ -793,26 +793,18 @@ if __name__ == "__main__":
                             emojis=emoji,
                             tgs_sticker=None,
                         )
-                        for s in old_pack.stickers:
-                            if s.emoji == emoji:
-                                sleep(30)
-                                try:
-                                    req = bot.delete_sticker_from_set(s.file_id)
-                                except:
-                                    sleep(30)
-                                finally:
-                                    req = bot.delete_sticker_from_set(s.file_id)
-                        #bot.send_message(
-                        #    USER_ID,
-                        #    f"{emoji}: upload complete, old deleted, sleeping now",
-                        #)
                         sleep(30)
             except Exception as e:
-                #bot.send_message(
-                #    USER_ID,
-                #    f"Sticker pack upload is getting rate limited by Telegram: {e}",
-                #)
                 sleep(30)
+
+        for s in old_pack.stickers:
+            if s.emoji == emoji:
+                try:
+                    req = bot.delete_sticker_from_set(s.file_id)
+                except:
+                    sleep(30)
+                finally:
+                    req = bot.delete_sticker_from_set(s.file_id)
 
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
