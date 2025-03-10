@@ -746,7 +746,7 @@ if __name__ == "__main__":
     PACK_NAME = getenv("TG_PACK_NAME")
     TELEGRAM_BOT_TOKEN = getenv("TG_BOT_TOKEN")
 
-    bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN, parse_mode=None, threaded=False, timeout=60)
+    bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN, parse_mode=None, threaded=False)
     ignore_load = []
 
     try:
