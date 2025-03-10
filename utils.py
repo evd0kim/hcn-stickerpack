@@ -210,7 +210,7 @@ def is_etf_posting_time():
         return False
 
     # Increase interval, once per hour
-    if now_utc.minute > 5:
+    if now_utc.minute > 10:
         return False
 
     # Check if current ET time is within US market hours
@@ -221,7 +221,7 @@ def is_fng_posting_time():
     now_utc = datetime.now(timezone.utc)
 
     # Leaving just once per day
-    if now_utc.minute < 5 and now_utc.hour < 1:
+    if now_utc.minute < 10 and now_utc.hour < 1:
         return True
 
     return False

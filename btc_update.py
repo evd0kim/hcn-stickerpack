@@ -746,7 +746,7 @@ if __name__ == "__main__":
     PACK_NAME = getenv("TG_PACK_NAME")
     TELEGRAM_BOT_TOKEN = getenv("TG_BOT_TOKEN")
 
-    bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN, parse_mode=None)
+    bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN, parse_mode=None, threaded=False, timeout=60)
     ignore_load = []
 
     try:
@@ -795,18 +795,19 @@ if __name__ == "__main__":
                         )
                         for s in old_pack.stickers:
                             if s.emoji == emoji:
+                                sleep(15)
                                 req = bot.delete_sticker_from_set(s.file_id)
                         bot.send_message(
                             USER_ID,
                             f"{emoji}: upload complete, old deleted, sleeping now",
                         )
-                        sleep(30)
+                        sleep(15)
             except Exception as e:
                 bot.send_message(
                     USER_ID,
                     f"Sticker pack upload is getting rate limited by Telegram: {e}",
                 )
-                sleep(60)
+                sleep(30)
 
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
