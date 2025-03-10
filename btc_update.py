@@ -797,10 +797,10 @@ if __name__ == "__main__":
                             if s.emoji == emoji:
                                 sleep(15)
                                 req = bot.delete_sticker_from_set(s.file_id)
-                        bot.send_message(
-                            USER_ID,
-                            f"{emoji}: upload complete, old deleted, sleeping now",
-                        )
+                        #bot.send_message(
+                        #    USER_ID,
+                        #    f"{emoji}: upload complete, old deleted, sleeping now",
+                        #)
                         sleep(15)
             except Exception as e:
                 bot.send_message(
