@@ -788,7 +788,7 @@ if __name__ == "__main__":
                     if s.emoji == emoji:
                         try:
                             req = bot.delete_sticker_from_set(s.file_id)
-                        except:
+                        except Exception as e:
                             bot.send_message(USER_ID, f"Sticker cleanup, exception caught: {e}")
                             sleep(60)
                 try:
@@ -800,7 +800,7 @@ if __name__ == "__main__":
                             emojis=emoji,
                             tgs_sticker=None,
                         )
-                except:
+                except Exception as e:
                     bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
                     sleep(60)
 
