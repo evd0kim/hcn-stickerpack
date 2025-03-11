@@ -776,15 +776,22 @@ if __name__ == "__main__":
         }
 
         for emoji, png_file in files.items():
-            try:
-                if emoji == "🙏":
-                    continue
-                elif emoji in ["⛓", "😱", "🤡"] and not is_fng_posting_time():
-                    # halving info once per day, too
-                    continue
-                elif emoji == "🏦" and not is_etf_posting_time():
-                    continue
-                else:
+            if emoji == "🙏":
+                continue
+            elif emoji in ["⛓", "😱", "🤡"] and not is_fng_posting_time():
+                # halving info once per day, too
+                continue
+            elif emoji == "🏦" and not is_etf_posting_time():
+                continue
+            else:
+                for s in old_pack.stickers:
+                    if s.emoji == emoji:
+                        try:
+                            req = bot.delete_sticker_from_set(s.file_id)
+                        except:
+                            bot.send_message(USER_ID, f"Sticker cleanup, exception caught: {e}")
+                            sleep(60)
+                try:
                     with open(png_file, "rb") as sticker:
                         req = bot.add_sticker_to_set(
                             USER_ID,
@@ -793,13 +800,18 @@ if __name__ == "__main__":
                             emojis=emoji,
                             tgs_sticker=None,
                         )
-                    for s in old_pack.stickers:
-                        if s.emoji == emoji:
-                            req = bot.delete_sticker_from_set(s.file_id)
-                    sleep(30)
-            except Exception as e:
-                sleep(30)
-
+                except:
+                    bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
+                    sleep(60)
+                finally:
+                    with open(png_file, "rb") as sticker:
+                        req = bot.add_sticker_to_set(
+                            USER_ID,
+                            name=PACK_NAME,
+                            png_sticker=sticker,
+                            emojis=emoji,
+                            tgs_sticker=None,
+                        )
 
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
