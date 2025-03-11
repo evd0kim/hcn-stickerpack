@@ -803,15 +803,6 @@ if __name__ == "__main__":
                 except:
                     bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
                     sleep(60)
-                finally:
-                    with open(png_file, "rb") as sticker:
-                        req = bot.add_sticker_to_set(
-                            USER_ID,
-                            name=PACK_NAME,
-                            png_sticker=sticker,
-                            emojis=emoji,
-                            tgs_sticker=None,
-                        )
 
     except Exception as e:
         bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
