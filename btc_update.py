@@ -752,19 +752,19 @@ if __name__ == "__main__":
     try:
         btc_data = load_btc()
         btc_png = draw_btc_price(btc_data)
-        btc_png.write_to_png("btc.png")
+        #btc_png.write_to_png("btc.png")
 
         eth_png = draw_eth_price(btc_data)
-        eth_png.write_to_png("eth.png")
+        #eth_png.write_to_png("eth.png")
 
         if is_etf_posting_time():
             etf_data = load_etf()
             etf_png = draw_etf_price(etf_data)
-            etf_png.write_to_png("etf.png")
+            #etf_png.write_to_png("etf.png")
 
         old_pack = bot.get_sticker_set(PACK_NAME)
         old_emojis = [s.emoji for s in old_pack.stickers]
-
+        '''
         files = {
             "💸": "btc.png",
             "💩": "eth.png",
@@ -773,6 +773,41 @@ if __name__ == "__main__":
             "⛓": "halving.png",
             "🙏": f"./assets/donate.png",
             "🤡": "fear-troll.png",
+        }
+        '''
+
+        btc_bytes = io.BytesIO()
+        btc_png.write_to_png(btc_bytes)
+        btc_bytes.seek(0)  # Reset pointer to beginning of buffer
+
+        eth_bytes = io.BytesIO()
+        eth_png.write_to_png(eth_bytes)
+        eth_bytes.seek(0)  # Reset pointer to beginning of buffer
+
+        etf_bytes = io.BytesIO()
+        etf_png.write_to_png(etf_bytes)
+        etf_bytes.seek(0)  # Reset pointer to beginning of buffer
+
+        halving_bytes = io.BytesIO()
+        halving_png.write_to_png(halving_bytes)
+        halving_bytes.seek(0)  # Reset pointer to beginning of buffer
+
+        fear_bytes = io.BytesIO()
+        fear_png.write_to_png(fear_bytes)
+        fear_bytes.seek(0)  # Reset pointer to beginning of buffer
+
+        fear_troll_bytes = io.BytesIO()
+        fear_troll_png.write_to_png(fear_troll_bytes)
+        fear_troll_bytes.seek(0)  # Reset pointer to beginning of buffer
+
+        files = {
+            "💸": btc_bytes,
+            "💩": eth_bytes,
+            "🏦": etf_bytes,
+            "😱": fear_bytes,
+            "⛓": halving_bytes,
+            "🙏": f"./assets/donate.png",
+            "🤡": fear_troll_bytes,
         }
 
         for emoji, png_file in files.items():
@@ -789,9 +824,10 @@ if __name__ == "__main__":
                         try:
                             req = bot.delete_sticker_from_set(s.file_id)
                         except Exception as e:
-                            bot.send_message(USER_ID, f"Sticker cleanup, exception caught: {e}")
+                            #bot.send_message(USER_ID, f"Sticker cleanup, exception caught: {e}")
                             sleep(60)
                 try:
+                    """
                     with open(png_file, "rb") as sticker:
                         req = bot.add_sticker_to_set(
                             USER_ID,
@@ -800,8 +836,18 @@ if __name__ == "__main__":
                             emojis=emoji,
                             tgs_sticker=None,
                         )
+                    """
+                    req = bot.add_sticker_to_set(
+                        USER_ID,
+                        name=PACK_NAME,
+                        png_sticker=png_file,
+                        emojis=emoji,
+                        tgs_sticker=None,
+                    )
                 except Exception as e:
-                    bot.send_message(USER_ID, f"Sticker pack update, exception caught: {e}")
+                    msg = f"Sticker pack update, exception caught: {e}"
+                    #bot.send_message(USER_ID, msg)
+                    print(msg)
                     sleep(60)
 
     except Exception as e:
