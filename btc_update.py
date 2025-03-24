@@ -757,10 +757,14 @@ if __name__ == "__main__":
         eth_png = draw_eth_price(btc_data)
         #eth_png.write_to_png("eth.png")
 
+        etf_bytes = io.BytesIO()
+
         if is_etf_posting_time():
             etf_data = load_etf()
             etf_png = draw_etf_price(etf_data)
             #etf_png.write_to_png("etf.png")
+            etf_png.write_to_png(etf_bytes)
+            etf_bytes.seek(0)  # Reset pointer to beginning of buffer
 
         old_pack = bot.get_sticker_set(PACK_NAME)
         old_emojis = [s.emoji for s in old_pack.stickers]
@@ -783,10 +787,6 @@ if __name__ == "__main__":
         eth_bytes = io.BytesIO()
         eth_png.write_to_png(eth_bytes)
         eth_bytes.seek(0)  # Reset pointer to beginning of buffer
-
-        etf_bytes = io.BytesIO()
-        etf_png.write_to_png(etf_bytes)
-        etf_bytes.seek(0)  # Reset pointer to beginning of buffer
 
         halving_bytes = io.BytesIO()
         halving_png.write_to_png(halving_bytes)
